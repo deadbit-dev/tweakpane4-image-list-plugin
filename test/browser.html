@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<title></title>
+</head>
+
+<body>
+	<script type="module">
+		import * as Tweakpane from '../node_modules/tweakpane/dist/tweakpane.js';
+		import * as TweakpaneImagePlugin from '../dist/tweakpane4-image-list-plugin.js';
+
+		const params = {
+			data: '',
+		};
+
+		const pane = new Tweakpane.Pane();
+
+		pane.registerPlugin(TweakpaneImagePlugin);
+
+		pane.addBinding(params, 'data', {
+			label: 'Texture',
+			view: 'thumbnail-list',
+			options: [
+				{ value: 'img_1', src: 'https://images.freeimages.com/image/previews/b48/nature-stroke-png-design-5690476.png?fmt=webp&w=500' },
+				{ value: 'img_2', src: 'https://images.freeimages.com/image/previews/50b/japanese-bonsai-nature-hand-png-5692400.png?fmt=webp&w=500' }
+			]
+		});
+
+		window.pane = pane;
+	</script>
+	<style>
+		* {
+			font-family: monospace;
+		}
+
+		body {
+			background-color: rgb(40, 36, 41);
+		}
+
+		:root {
+			background-size: cover;
+			--tp-plugin-thumbnail-list-height: 500px;
+			--tp-plugin-thumbnail-list-width: 200px;
+			--tp-plugin-thumbnail-list-thumb-size: 40px;
+			--tp-plugin-thumbnail-list-dragging-color: lightgreen;
+			/* --tp-plugin-thumbnail-list-dragging-color-error: red; */
+		}
+
+		#sprite-container {
+			display: flex;
+			justify-content: center;
+			margin-top: 650px;
+		}
+
+		#sprite-file {
+			width: 100px;
+			height: 100px;
+			margin: 5px;
+		}
+	</style>
+	<div id="sprite-container">
+		<img id="sprite-file"
+			src="https://images.freeimages.com/image/previews/b48/nature-stroke-png-design-5690476.png?fmt=webp&w=500">
+		<img id="sprite-file"
+			src="https://images.freeimages.com/image/previews/50b/japanese-bonsai-nature-hand-png-5692400.png?fmt=webp&w=500">
+		<img id="sprite-file"
+			src="https://images.freeimages.com/image/previews/d15/fallen-faces-halloween-png-5691343.png?fmt=webp&w=500">
+	</div>
+</body>
+
+</html>

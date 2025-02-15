@@ -1,0 +1,136 @@
+// Import core styles
+@use '../../node_modules/@tweakpane/core/lib/sass/tp';
+
+.#{tp.$prefix}-thumbv {
+	@extend %tp-input;
+
+	--tptl-thumb-size: var(--tp-plugin-thumbnail-list-thumb-size, var(--bld-vw));
+
+	position: relative;
+	height: var(--tptl-thumb-size);
+	cursor: pointer;
+
+	&,
+	&:hover {
+		background: none;
+	}
+
+	&.#{tp.$disabled} {
+		opacity: 0.5;
+	}
+
+	/* Overlay */
+	&_ovl {
+		z-index: 100;
+		box-shadow: 0 2px 4px var(--bs-sh);
+		display: none;
+		position: absolute;
+		top: var(--tptl-thumb-size);
+		right: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		max-height: var(--tp-plugin-thumbnail-list-height, 400px);
+		width: var(--tp-plugin-thumbnail-list-width, 200px);
+		background: var(--bs-bg);
+		padding: var(--cnt-v-p) var(--cnt-h-p);
+		border-bottom-left-radius: var(--bs-br);
+		border-bottom-right-radius: var(--bs-br);
+
+		.#{tp.$prefix}-thumbv_-active & {
+			display: block;
+		}
+	}
+
+	/* Option and Select */
+	&_opt,
+	&_sopt {
+		display: flex;
+		flex-direction: row;
+		color: var(--in-fg);
+	}
+
+	&_sopt {
+		height: var(--tptl-thumb-size);
+	}
+
+	/* Option */
+	&_opt {
+		height: var(--tptl-thumb-size);
+		margin: 0 calc(-1 * var(--cnt-h-p));
+		padding: var(--cnt-v-p) var(--cnt-h-p) 0;
+		opacity: 0.75;
+
+		&[aria-selected] {
+			opacity: 1.0;
+			background: var(--in-bg);
+		}
+
+		&:hover {
+			opacity: 1.0;
+		}
+	}
+
+	/* Image and Select Image */
+	&_thmb,
+	&_sthmb {
+		flex-shrink: 0;
+		width: var(--tptl-thumb-size);
+		height: 100%;
+		border-radius: var(--elm-br);
+		background-size: contain;
+		background-clip: border-box;
+		background-position-x: center;
+		background-repeat: no-repeat;
+		position: relative;
+	}
+
+	&_sthmb {
+		width: var(--tptl-thumb-size);
+		height: var(--tptl-thumb-size);
+	}
+
+	&_thmb {
+		margin-right: 2em;
+		width: var(--tptl-thumb-size);
+	}
+
+	[aria-selected] &_thmb::after {
+		content: '✓';
+		position: absolute;
+		right: -1em;
+		font-size: 1.5em;
+		line-height: var(--tptl-thumb-size);
+	}
+
+	&_lbl,
+	&_slbl {
+		height: var(--tptl-thumb-size);
+		line-height: var(--tptl-thumb-size);
+		text-overflow: ellipsis;
+	}
+
+	&_slbl {
+		margin-left: 5px;
+		padding-left: 10px;
+		background-color: var(--in-bg);
+		border-radius: var(--elm-br);
+		box-sizing: border-box;
+		min-width: 0;
+		width: 100%;
+	}
+
+	&_lbl {
+		height: var(--tptl-thumb-size);
+		line-height: var(--tptl-thumb-size);
+	}
+
+	&_dragging_area {
+		border: 2px dashed var(--tp-plugin-thumbnail-list-dragging-color);
+		border-radius: 4px;
+		opacity: 0.6;
+	}
+
+	// &_dragging_area_error {
+	// 	border-color: var(--tp-plugin-thumbnail-list-dragging-color-error);
+	// }
+}

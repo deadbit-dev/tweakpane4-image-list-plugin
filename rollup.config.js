@@ -2,6 +2,7 @@
 
 import Alias from '@rollup/plugin-alias';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import CommonJS from '@rollup/plugin-commonjs';
 import Replace from '@rollup/plugin-replace';
 import Typescript from '@rollup/plugin-typescript';
 import Autoprefixer from 'autoprefixer';
@@ -36,11 +37,15 @@ function getPlugins(css, shouldMinify) {
 			tsconfig: 'src/tsconfig.json',
 		}),
 		nodeResolve(),
+		CommonJS({
+			include: /node_modules/,
+		}),
 		Replace({
 			__css__: css,
 			__checker_img_src__:
 				'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA4klEQVR4Xu2awQ3EQAjEbjun9Ohq8ANZOP8JZDBstOL94DMzQ16xrX8k+b92+wNo/AyIAOgARXBbXwtAABqC2wjT+LVALQAdoAhu62sBCECnwDbCNH4tcL4FKEJ2/bN/AM0/A6iDdn0E2CtI848A6qBdHwH2CtL8I4A6aNdHgL2CNP8IoA7a9d0Inb8RygDoQDOgHaGWpNoSI2Nke4b0H0Cq155gi5JtirYfsD3FafxOgfOnAEXIru9KzF5Bmn8EUAft+giwV5DmHwHUQbs+AuwVpPlHAHXQro8AewVp/ucJ+AAX4sBQqPDC3AAAAABJRU5ErkJggg==',
 			preventAssignment: false,
+			'process.env.NODE_ENV': JSON.stringify('production'),
 		}),
 	];
 	if (shouldMinify) {

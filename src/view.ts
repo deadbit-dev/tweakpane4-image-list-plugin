@@ -1,31 +1,35 @@
-import { ClassName, Value, View, ViewProps } from '@tweakpane/core';
+import { ClassName, TextProps, TextView, Value, View, ViewProps } from '@tweakpane/core';
 import { Thumbnail } from './controller.js';
 
 const CHECKER_IMG_SRC = '__checker_img_src__';
 const className = ClassName('thumb');
 
 interface Config {
+	textView: TextView<string>;
 	value: Value<Thumbnail | null>;
 	valueOptions: Thumbnail[];
+	textProps: TextProps<string>;
 	viewProps: ViewProps;
-	clickCallback?: (event: MouseEvent, input: HTMLInputElement) => void;
+	onTextInput: (event: Event) => void;
+	onOptionClick: (option: Thumbnail) => void;
 }
 
+// TODO: need refactoring
 export class PluginView implements View {
 	public readonly element: HTMLElement;
 	private doc_: Document;
 	private value_: Value<Thumbnail | null>;
 	private valueOptions_: Thumbnail[];
+	private textView_: TextView<string>;
 	private overlayEl_: HTMLElement;
 	private selectEl_: HTMLElement;
 	private selectThumbEl_: HTMLElement;
-	private selectLabelEl_: HTMLElement;
 	private optionEls_: HTMLElement[] = [];
 
 	constructor(doc: Document, config: Config) {
 		this.onSelect_ = this.onSelect_.bind(this);
-		this.open_ = this.open_.bind(this);
-		this.close_ = this.close_.bind(this);
+		this.open = this.open.bind(this);
+		this.close = this.close.bind(this);
 
 		this.doc_ = doc;
 
@@ -40,15 +44,20 @@ export class PluginView implements View {
 		this.selectThumbEl_.classList.add(className('sthmb'));
 		this.selectEl_.appendChild(this.selectThumbEl_);
 
-		this.selectLabelEl_ = document.createElement('span');
-		this.selectLabelEl_.classList.add(className('slbl'));
-		this.selectEl_.appendChild(this.selectLabelEl_);
+		this.textView_ = config.textView;
+		this.textView_.inputElement.addEventListener(
+			'click',
+			this.onTextInputClick.bind(this),
+		);
+		this.textView_.element.classList.add(className('slbl'));
+		this.textView_.inputElement.addEventListener('input', config.onTextInput);
+		this.selectEl_.appendChild(this.textView_.element);
 
 		this.overlayEl_ = doc.createElement('div');
 		this.overlayEl_.classList.add(className('ovl'));
 		this.element.appendChild(this.overlayEl_);
 
-		this.selectEl_.addEventListener('click', this.open_);
+		this.selectEl_.addEventListener('click', this.open);
 
 		config.viewProps.bindClassModifiers(this.element);
 
@@ -60,8 +69,8 @@ export class PluginView implements View {
 		this.refresh_();
 
 		config.viewProps.handleDispose(() => {
-			this.selectEl_.removeEventListener('click', this.open_);
-			this.doc_.removeEventListener('click', this.close_);
+			this.selectEl_.removeEventListener('click', this.open);
+			this.doc_.removeEventListener('click', this.close);
 
 			let rowEl;
 			while ((rowEl = this.optionEls_.pop())) {
@@ -72,34 +81,33 @@ export class PluginView implements View {
 	}
 
 	private init_(): void {
-		const doc = this.element.ownerDocument;
-
-		const createOptionEl = (thumbnail: Thumbnail | null) => {
-			const thumbEl = doc.createElement('div');
-			thumbEl.classList.add(className('thmb'));
-			thumbEl.style.backgroundImage = thumbnail
-				? `url(${thumbnail.src})`
-				: `url(${CHECKER_IMG_SRC})`;
-
-			const labelEl = doc.createElement('span');
-			labelEl.classList.add(className('lbl'));
-			labelEl.textContent = thumbnail ? thumbnail.value : 'None';
-
-			const optionEl = doc.createElement('div');
-			optionEl.classList.add(className('opt'));
-			optionEl.appendChild(thumbEl);
-			optionEl.appendChild(labelEl);
-			optionEl.setAttribute('data-value', thumbnail ? thumbnail.value : '');
-			optionEl.addEventListener('click', this.onSelect_);
-
-			this.optionEls_.push(optionEl);
-			this.overlayEl_.appendChild(optionEl);
-		};
-
-		createOptionEl(null);
+		this.createOptionEl(null);
 		for (const thumbnail of this.valueOptions_) {
-			createOptionEl(thumbnail);
+			this.createOptionEl(thumbnail);
 		}
+	}
+
+	private createOptionEl(thumbnail: Thumbnail | null) {
+		const doc = this.element.ownerDocument;
+		const thumbEl = doc.createElement('div');
+		thumbEl.classList.add(className('thmb'));
+		thumbEl.style.backgroundImage = thumbnail
+			? `url(${thumbnail.src})`
+			: `url(${CHECKER_IMG_SRC})`;
+
+		const labelEl = doc.createElement('span');
+		labelEl.classList.add(className('lbl'));
+		labelEl.textContent = thumbnail ? thumbnail.value : 'None';
+
+		const optionEl = doc.createElement('div');
+		optionEl.classList.add(className('opt'));
+		optionEl.appendChild(thumbEl);
+		optionEl.appendChild(labelEl);
+		optionEl.setAttribute('data-value', thumbnail ? thumbnail.value : '');
+		optionEl.addEventListener('click', this.onSelect_);
+
+		this.optionEls_.push(optionEl);
+		this.overlayEl_.appendChild(optionEl);
 	}
 
 	/** Updates UI state after a value change. */
@@ -108,10 +116,10 @@ export class PluginView implements View {
 
 		if (active) {
 			this.selectThumbEl_.style.backgroundImage = `url(${active.src})`;
-			this.selectLabelEl_.textContent = active.value;
+			this.textView_.inputElement.value = active.value;
 		} else {
 			this.selectThumbEl_.style.backgroundImage = `url(${CHECKER_IMG_SRC})`;
-			this.selectLabelEl_.textContent = 'No Image';
+			this.textView_.inputElement.value = 'No Image';
 		}
 
 		const activeValue = active ? active.value : '';
@@ -125,16 +133,22 @@ export class PluginView implements View {
 	}
 
 	/** Opens the overlay. */
-	private open_(event: MouseEvent) {
-		this.element.classList.add(className('-active'));
-		this.doc_.addEventListener('click', this.close_);
+	public open(event: MouseEvent) {
+		this.showOptions();
 		event.stopPropagation();
 	}
 
+	private showOptions() {
+		this.element.classList.add(className('-active'));
+		this.doc_.addEventListener('click', this.close);
+	}
+
 	/** Closes the overlay. */
-	private close_() {
+	public close() {
 		this.element.classList.remove(className('-active'));
-		this.doc_.removeEventListener('click', this.close_);
+		this.doc_.removeEventListener('click', this.close);
+		// refrash for update value if no one selected
+		this.refresh_();
 	}
 
 	/** Selects the thumbnail element clicked. */
@@ -148,17 +162,49 @@ export class PluginView implements View {
 	}
 
 	/** Given a click event somewhere in an option, finds the nearest option element. */
-	private findOptionEl_(el: HTMLElement | null): HTMLElement {
-		while (el && !el.hasAttribute('data-value')) {
-			el = el.parentElement;
+	private findOptionEl_(element: HTMLElement | null): HTMLElement {
+		while (element && !element.hasAttribute('data-value')) {
+			element = element.parentElement;
 		}
-		if (!el) throw new Error('Invalid DOM scope');
-		return el;
+		if (!element) throw new Error('Invalid DOM scope');
+		return element;
 	}
 
 	/** Change handler. */
 	private onValueChange_() {
 		this.refresh_();
+	}
+
+	private onTextInputClick() {
+		this.textView_.inputElement.value = '';
+		this.updateOptions(this.valueOptions_);
+		this.showOptions();
+	}
+
+	public updateOptions(options: Thumbnail[]) {
+		this.optionEls_.forEach((element) => {
+			this.overlayEl_.removeChild(element);
+		});
+		this.optionEls_ = [];
+		this.createOptionEl(null);
+		options.forEach((option) => {
+			this.createOptionEl(option);
+		});
+		const active = this.value_.rawValue;
+		if (active) {
+			for (const optionEl of this.optionEls_) {
+				if (optionEl.getAttribute('data-value') !== active.value) {
+					continue;
+				}
+				optionEl.setAttribute('aria-selected', 'true');
+				break;
+			}
+		} else {
+			this.optionEls_.find((option) => {
+				console.log(option.getAttribute('data-value'));
+				return option.getAttribute('data-value') === '';
+			})?.setAttribute('aria-selected', 'true');
+		}
 	}
 
 	public changeDraggingState(state: boolean) {

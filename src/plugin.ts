@@ -3,8 +3,10 @@ import {
 	BindingTarget,
 	CompositeConstraint,
 	createPlugin,
+	createValue,
 	InputBindingPlugin,
 	parseRecord,
+	ValueMap,
 } from '@tweakpane/core';
 
 import { PluginController, Thumbnail } from './controller.js';
@@ -12,6 +14,7 @@ import { PluginController, Thumbnail } from './controller.js';
 export interface PluginInputParams extends BaseInputParams {
 	view: 'thumbnail-list';
 	options: Thumbnail[];
+	debounceDelay?: number;
 }
 
 export const TweakpaneImagePlugin: InputBindingPlugin<
@@ -33,8 +36,10 @@ export const TweakpaneImagePlugin: InputBindingPlugin<
 				p.required.object({
 					value: p.required.string,
 					src: p.required.string,
-				}),
-			)
+				})
+			),
+			noDataText: p.optional.string,
+			debounceDelay: p.optional.number
 		}));
 
 		if (!result) {
@@ -53,12 +58,6 @@ export const TweakpaneImagePlugin: InputBindingPlugin<
 				return (
 					_args.params.options.find((option) => option.value == exValue) || null
 				);
-
-				// if (exValue.src !== undefined) {
-				// 	return exValue.src === '' ? 'placeholder' : exValue.src;
-				// } else {
-				// 	return typeof exValue === 'string' ? exValue : exValue;
-				// }
 			};
 		},
 
@@ -77,6 +76,11 @@ export const TweakpaneImagePlugin: InputBindingPlugin<
 		return new PluginController(args.document, {
 			value: args.value,
 			valueOptions: args.params.options,
+			textValue: createValue(''),
+			debounceDelay: args.params.debounceDelay || 250,
+			textProps: ValueMap.fromObject({
+				formatter: (val: any) => String(val),
+			}),
 			viewProps: args.viewProps
 		});
 	},

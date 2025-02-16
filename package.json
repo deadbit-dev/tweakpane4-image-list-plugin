@@ -1,6 +1,6 @@
 {
   "name": "tweakpane4-image-list-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Image input plugin for Tweakpane",
   "main": "dist/tweakpane4-image-list-plugin.js",
   "type": "module",

@@ -67,16 +67,19 @@ export class PluginController implements Controller<PluginView> {
 			this.view.element.removeEventListener('dragleave', this.onDragLeave);
 		});
 
-		this.value.emitter.on('change', () => this.handleValueChange());
-
-		this.handleValueChange();
+		// this.value.emitter.on('change', () => this.setValue);
+		// this.setValue(this.value.rawValue);
 	}
 
-	filterOptions(text = ''): void {
+	private filterOptions(text = ''): void {
 		const options = this.valueOptions.filter(
 			(option) => option.value.toLowerCase().indexOf(text.trim().toLowerCase()) !== -1,
 		);
 		options && this.view.updateOptions(options);
+	}
+
+	private setValue(src: Thumbnail | null) {
+		this.value.setRawValue(src);
 	}
 
 	private onTextInput(event: Event): void {
@@ -85,26 +88,33 @@ export class PluginController implements Controller<PluginView> {
 		this.debounceFilterOptions(value);
 	}
 
-	private onOptionClick(option: Thumbnail) {
+	private onOptionClick(option: Thumbnail | null) {
 		this.value.rawValue = option;
-		this.textValue.rawValue = option.value;
+		this.textValue.rawValue = option ? option.value : ''; // FIXME
 	}
 
 	private onDrop(event: DragEvent) {
 		event.preventDefault();
-		const url = this.getUrlFromDrag(event);
-		const thumbnail: Thumbnail | null = this.getThumbnailFromUrl(url);
+		const value = this.getValueFromDrag(event);
+		const thumbnail: Thumbnail | null = this.getThumbnailFromValue(value);
 		this.setValue(thumbnail);
 		this.view.changeDraggingState(false);
 		this.view.close();
 	}
 
-	private getThumbnailFromUrl(url: string): Thumbnail | null {
-		if (url == '')
+	private getValueFromDrag(event: DragEvent): string {
+		const dataTransfer = event.dataTransfer;
+		if (!dataTransfer)
+			return ''; // maybe set error img
+		return dataTransfer.getData('text/plain');
+	}
+
+	private getThumbnailFromValue(value: string): Thumbnail | null {
+		if (value == '')
 			return null;
 
 		const index = this.valueOptions.findIndex((option) => {
-			return option.src == url;
+			return option.value == value;
 		});
 
 		if (index == -1)
@@ -113,17 +123,9 @@ export class PluginController implements Controller<PluginView> {
 		return this.valueOptions[index];
 	}
 
-	private getUrlFromDrag(event: DragEvent): string {
-		const dataTransfer = event.dataTransfer;
-		if (!dataTransfer)
-			return ''; // maybe set error img
-		return dataTransfer.getData('url');
-	}
-
 	private onDragOver(event: DragEvent) {
 		event.preventDefault();
 		this.view.changeDraggingState(true);
-		// this.view.close();
 
 		// if (this.getThumbnailFromUrl(this.getUrlFromDrag(event)) == null) {
 		// 	this.view.setDraggingError();
@@ -132,17 +134,5 @@ export class PluginController implements Controller<PluginView> {
 
 	private onDragLeave() {
 		this.view.changeDraggingState(false);
-	}
-
-	private handleImage(data: Thumbnail | null) {
-		this.setValue(data);
-	}
-
-	private setValue(src: Thumbnail | null) {
-		this.value.setRawValue(src);
-	}
-
-	private handleValueChange() {
-		this.handleImage(this.value.rawValue);
 	}
 }

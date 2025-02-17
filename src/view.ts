@@ -11,10 +11,9 @@ interface Config {
 	textProps: TextProps<string>;
 	viewProps: ViewProps;
 	onTextInput: (event: Event) => void;
-	onOptionClick: (option: Thumbnail) => void;
+	onOptionClick: (option: Thumbnail | null) => void;
 }
 
-// TODO: need refactoring
 export class PluginView implements View {
 	public readonly element: HTMLElement;
 	private doc_: Document;
@@ -25,6 +24,7 @@ export class PluginView implements View {
 	private selectEl_: HTMLElement;
 	private selectThumbEl_: HTMLElement;
 	private optionEls_: HTMLElement[] = [];
+	private onOptionClick_: (option: Thumbnail | null) => void;
 
 	constructor(doc: Document, config: Config) {
 		this.onSelect_ = this.onSelect_.bind(this);
@@ -38,6 +38,7 @@ export class PluginView implements View {
 
 		this.selectEl_ = document.createElement('div');
 		this.selectEl_.classList.add(className('sopt'));
+		this.selectEl_.addEventListener('click', this.close);
 		this.element.appendChild(this.selectEl_);
 
 		this.selectThumbEl_ = document.createElement('div');
@@ -51,19 +52,20 @@ export class PluginView implements View {
 		);
 		this.textView_.element.classList.add(className('slbl'));
 		this.textView_.inputElement.addEventListener('input', config.onTextInput);
+		this.textView_.element.addEventListener('click', this.open);
 		this.selectEl_.appendChild(this.textView_.element);
 
 		this.overlayEl_ = doc.createElement('div');
 		this.overlayEl_.classList.add(className('ovl'));
 		this.element.appendChild(this.overlayEl_);
 
-		this.selectEl_.addEventListener('click', this.open);
-
 		config.viewProps.bindClassModifiers(this.element);
 
 		this.value_ = config.value;
 		this.value_.emitter.on('change', this.onValueChange_.bind(this));
 		this.valueOptions_ = config.valueOptions;
+
+		this.onOptionClick_ = config.onOptionClick;
 
 		this.init_();
 		this.refresh_();
@@ -134,13 +136,9 @@ export class PluginView implements View {
 
 	/** Opens the overlay. */
 	public open(event: MouseEvent) {
-		this.showOptions();
-		event.stopPropagation();
-	}
-
-	private showOptions() {
 		this.element.classList.add(className('-active'));
 		this.doc_.addEventListener('click', this.close);
+		event.stopPropagation();
 	}
 
 	/** Closes the overlay. */
@@ -158,7 +156,7 @@ export class PluginView implements View {
 		const thumbnail = this.valueOptions_.find(
 			(option) => option.value === value,
 		);
-		this.value_.setRawValue(thumbnail || null);
+		this.onOptionClick_(thumbnail || null);
 	}
 
 	/** Given a click event somewhere in an option, finds the nearest option element. */
@@ -178,7 +176,6 @@ export class PluginView implements View {
 	private onTextInputClick() {
 		this.textView_.inputElement.value = '';
 		this.updateOptions(this.valueOptions_);
-		this.showOptions();
 	}
 
 	public updateOptions(options: Thumbnail[]) {
@@ -190,6 +187,8 @@ export class PluginView implements View {
 		options.forEach((option) => {
 			this.createOptionEl(option);
 		});
+
+		// TODO: refactoring
 		const active = this.value_.rawValue;
 		if (active) {
 			for (const optionEl of this.optionEls_) {

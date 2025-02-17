@@ -29,6 +29,14 @@
 		});
 
 		window.pane = pane;
+
+		const spriteFiles = document.querySelectorAll("#sprite-file");
+		spriteFiles.forEach((file) => {
+			file.addEventListener("dragstart", (event) => {
+				event.dataTransfer.clearData();
+				event.dataTransfer.setData("text/plain", file.getAttribute("data-value"));
+			});
+		});
 	</script>
 	<style>
 		* {
@@ -61,11 +69,11 @@
 		}
 	</style>
 	<div id="sprite-container">
-		<img id="sprite-file"
+		<img id="sprite-file" data-value="img_1"
 			src="https://images.freeimages.com/image/previews/b48/nature-stroke-png-design-5690476.png?fmt=webp&w=500">
-		<img id="sprite-file"
+		<img id="sprite-file" data-value="img_2"
 			src="https://images.freeimages.com/image/previews/50b/japanese-bonsai-nature-hand-png-5692400.png?fmt=webp&w=500">
-		<img id="sprite-file"
+		<img id="sprite-file" data-value="img_3"
 			src="https://images.freeimages.com/image/previews/d15/fallen-faces-halloween-png-5691343.png?fmt=webp&w=500">
 	</div>
 </body>

@@ -200,7 +200,6 @@ export class PluginView implements View {
 			}
 		} else {
 			this.optionEls_.find((option) => {
-				console.log(option.getAttribute('data-value'));
 				return option.getAttribute('data-value') === '';
 			})?.setAttribute('aria-selected', 'true');
 		}

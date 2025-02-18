@@ -1,8 +1,6 @@
 // Import core styles
 @use '../../node_modules/@tweakpane/core/lib/sass/tp';
 
-// TODO: need refactoring
-
 .#{tp.$prefix}-thumbv {
 	@extend %tp-input;
 

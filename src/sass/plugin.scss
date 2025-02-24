@@ -21,7 +21,7 @@
 
 	/* Overlay */
 	&_ovl {
-		z-index: 100;
+		z-index: 10;
 		box-shadow: 0 2px 4px var(--bs-sh);
 		display: none;
 		position: absolute;
@@ -30,7 +30,8 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 		max-height: var(--tp-plugin-thumbnail-list-height, 400px);
-		width: var(--tp-plugin-thumbnail-list-width, 200px);
+		min-width: var(--tp-plugin-thumbnail-list-width, 200px);
+		max-width: auto;
 		background: var(--bs-bg);
 		padding: var(--cnt-v-p) var(--cnt-h-p);
 		border-bottom-left-radius: var(--bs-br);

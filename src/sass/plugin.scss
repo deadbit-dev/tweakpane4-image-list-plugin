@@ -74,25 +74,28 @@
 	/* Image and Select Image */
 	&_thmb,
 	&_sthmb {
-		flex-shrink: 0;
+		display: flex;
+		position: relative;
+		justify-content: center;
+		align-items: center;
 		width: var(--tptl-thumb-size);
 		height: 100%;
 		border-radius: var(--elm-br);
-		background-size: contain;
-		background-clip: border-box;
-		background-position-x: center;
-		background-repeat: no-repeat;
-		position: relative;
-	}
-
-	&_sthmb {
-		width: var(--tptl-thumb-size);
-		height: var(--tptl-thumb-size);
 	}
 
 	&_thmb {
 		margin-right: 2em;
+	}
+
+	&_img {
+		flex-shrink: 0;
+		position: relative;
+		background-size: cover;
+		background-clip: border-box;
+		background-position-x: center;
+		background-repeat: no-repeat;
 		width: var(--tptl-thumb-size);
+		height: 100%;
 	}
 
 	[aria-selected] &_thmb::after {

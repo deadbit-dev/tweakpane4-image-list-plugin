@@ -41,9 +41,13 @@ export class PluginView implements View {
 		this.selectEl_.addEventListener('click', this.close);
 		this.element.appendChild(this.selectEl_);
 
+		const container = document.createElement('div');
+		container.classList.add(className('sthmb'));
 		this.selectThumbEl_ = document.createElement('div');
-		this.selectThumbEl_.classList.add(className('sthmb'));
-		this.selectEl_.appendChild(this.selectThumbEl_);
+		this.selectThumbEl_.classList.add(className('img'));
+		container.appendChild(this.selectThumbEl_);
+
+		this.selectEl_.appendChild(container);
 
 		this.textView_ = config.textView;
 		this.textView_.inputElement.addEventListener(
@@ -93,9 +97,21 @@ export class PluginView implements View {
 		const doc = this.element.ownerDocument;
 		const thumbEl = doc.createElement('div');
 		thumbEl.classList.add(className('thmb'));
-		thumbEl.style.backgroundImage = thumbnail
+
+		const imgEl = doc.createElement('div');
+		imgEl.classList.add(className('img'));
+		imgEl.style.backgroundImage = thumbnail
 			? `url(${thumbnail.src})`
 			: `url(${CHECKER_IMG_SRC})`;
+
+		if (thumbnail && thumbnail.offset) {
+			imgEl.style.backgroundPosition = `${thumbnail.offset.posX}px ${thumbnail.offset.posY}px`;
+			imgEl.style.backgroundSize = `${thumbnail.offset.sizeX}px ${thumbnail.offset.sizeY}px`;
+			imgEl.style.width = `${thumbnail.offset.width}px`;
+			imgEl.style.height = `${thumbnail.offset.height}px`;
+		}
+
+		thumbEl.appendChild(imgEl);
 
 		const labelEl = doc.createElement('span');
 		labelEl.classList.add(className('lbl'));
@@ -118,6 +134,17 @@ export class PluginView implements View {
 
 		if (active) {
 			this.selectThumbEl_.style.backgroundImage = `url(${active.src})`;
+
+			if (active.offset) {
+				this.selectThumbEl_.style.backgroundPosition = `${active.offset.posX}px ${active.offset.posY} px`;
+				this.selectThumbEl_.style.backgroundSize = `${active.offset.sizeX}px ${active.offset.sizeY} px`;
+				this.selectThumbEl_.style.width = `${active.offset.width}px`;
+				this.selectThumbEl_.style.height = `${active.offset.height}px`;
+			} else {
+				this.selectThumbEl_.style.backgroundPosition = '0px 0px';
+				this.selectThumbEl_.style.backgroundSize = 'cover';
+			}
+
 			this.textView_.inputElement.value = active.value;
 		} else {
 			this.selectThumbEl_.style.backgroundImage = `url(${CHECKER_IMG_SRC})`;

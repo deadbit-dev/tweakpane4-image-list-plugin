@@ -14,6 +14,14 @@ interface Config {
 export interface Thumbnail {
 	value: string;
 	src: string;
+	offset?: {
+		posX: number;
+		posY: number;
+		width: number;
+		height: number;
+		sizeX: number;
+		sizeY: number;
+	};
 }
 
 // const placeholderImage: HTMLImageElement | null = null;

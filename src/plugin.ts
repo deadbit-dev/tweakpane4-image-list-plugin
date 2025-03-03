@@ -36,6 +36,14 @@ export const TweakpaneImagePlugin: InputBindingPlugin<
 				p.required.object({
 					value: p.required.string,
 					src: p.required.string,
+					offset: p.optional.object({
+						posX: p.required.number,
+						posY: p.required.number,
+						width: p.required.number,
+						height: p.required.number,
+						sizeX: p.required.number,
+						sizeY: p.required.number
+					})
 				})
 			),
 			noDataText: p.optional.string,

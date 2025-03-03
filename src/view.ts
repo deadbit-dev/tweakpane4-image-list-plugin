@@ -136,8 +136,8 @@ export class PluginView implements View {
 			this.selectThumbEl_.style.backgroundImage = `url(${active.src})`;
 
 			if (active.offset) {
-				this.selectThumbEl_.style.backgroundPosition = `${active.offset.posX}px ${active.offset.posY} px`;
-				this.selectThumbEl_.style.backgroundSize = `${active.offset.sizeX}px ${active.offset.sizeY} px`;
+				this.selectThumbEl_.style.backgroundPosition = `${active.offset.posX}px ${active.offset.posY}px`;
+				this.selectThumbEl_.style.backgroundSize = `${active.offset.sizeX}px ${active.offset.sizeY}px`;
 				this.selectThumbEl_.style.width = `${active.offset.width}px`;
 				this.selectThumbEl_.style.height = `${active.offset.height}px`;
 			} else {
@@ -148,6 +148,10 @@ export class PluginView implements View {
 			this.textView_.inputElement.value = active.value;
 		} else {
 			this.selectThumbEl_.style.backgroundImage = `url(${CHECKER_IMG_SRC})`;
+			this.selectThumbEl_.style.backgroundPosition = '0px 0px';
+			this.selectThumbEl_.style.backgroundSize = 'cover';
+			this.selectThumbEl_.style.width = `40px`;
+			this.selectThumbEl_.style.height = `40px`;
 			this.textView_.inputElement.value = 'No Image';
 		}
 

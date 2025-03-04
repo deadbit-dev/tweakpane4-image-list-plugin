@@ -98,7 +98,7 @@ export class PluginController implements Controller<PluginView> {
 
 	private onOptionClick(option: Thumbnail | null) {
 		this.value.rawValue = option;
-		this.textValue.rawValue = option ? option.value : ''; // FIXME
+		this.textValue.rawValue = option ? option.value : '';
 	}
 
 	private onDrop(event: DragEvent) {

@@ -30,8 +30,7 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 		max-height: var(--tp-plugin-thumbnail-list-height, 400px);
-		min-width: var(--tp-plugin-thumbnail-list-width, 200px);
-		max-width: auto;
+		width: var(--tp-plugin-thumbnail-list-width, 200px);
 		background: var(--bs-bg);
 		padding: var(--cnt-v-p) var(--cnt-h-p);
 		border-bottom-left-radius: var(--bs-br);
@@ -60,6 +59,8 @@
 		margin: 0 calc(-1 * var(--cnt-h-p));
 		padding: var(--cnt-v-p) var(--cnt-h-p) 0;
 		opacity: 0.75;
+		overflow: hidden;
+		text-overflow: ellipsis;
 
 		&[aria-selected] {
 			opacity: 1.0;

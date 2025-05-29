@@ -30,6 +30,17 @@
 			]
 		});
 
+		pane.addBinding(params, 'data', {
+			label: 'Texture',
+			view: 'thumbnail-list',
+			options: [
+				{ value: 'img_1', src: 'https://images.freeimages.com/image/previews/b48/nature-stroke-png-design-5690476.png?fmt=webp&w=500' },
+				{ value: 'img_2', src: 'https://images.freeimages.com/image/previews/50b/japanese-bonsai-nature-hand-png-5692400.png?fmt=webp&w=500' },
+				{ value: 'img_2wefwue8fu89uf2893uf2893uf82u38fu238uf2893uf9283uf', src: 'https://images.freeimages.com/image/previews/50b/japanese-bonsai-nature-hand-png-5692400.png?fmt=webp&w=500' },
+				{ value: 'test_atlas', src: './example_atlas.png', offset: { posX: -236, posY: -1231, width: 40, height: 40, sizeX: 2048, sizeY: 2048 } }
+			]
+		});
+
 		window.pane = pane;
 
 		const spriteFiles = document.querySelectorAll("#sprite-file");

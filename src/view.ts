@@ -25,6 +25,7 @@ export class PluginView implements View {
 	private selectThumbEl_: HTMLElement;
 	private optionEls_: HTMLElement[] = [];
 	private onOptionClick_: (option: Thumbnail | null) => void;
+	private static activeView: PluginView | null = null;
 
 	constructor(doc: Document, config: Config) {
 		this.onSelect_ = this.onSelect_.bind(this);
@@ -167,8 +168,14 @@ export class PluginView implements View {
 
 	/** Opens the overlay. */
 	public open(event: MouseEvent) {
+		// Close any previously open list
+		if (PluginView.activeView && PluginView.activeView !== this) {
+			PluginView.activeView.close();
+		}
+
 		this.element.classList.add(className('-active'));
 		this.doc_.addEventListener('click', this.close);
+		PluginView.activeView = this;
 		event.stopPropagation();
 	}
 
@@ -176,7 +183,10 @@ export class PluginView implements View {
 	public close() {
 		this.element.classList.remove(className('-active'));
 		this.doc_.removeEventListener('click', this.close);
-		// refrash for update value if no one selected
+		if (PluginView.activeView == this) {
+			PluginView.activeView = null;
+		}
+		// refresh for update value if no one selected
 		this.refresh_();
 	}
 
